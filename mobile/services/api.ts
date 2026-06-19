@@ -1,4 +1,10 @@
-const API_BASE = 'http://localhost:3000/api';
+import { Platform } from 'react-native';
+
+const DEVICE_HOST = '192.168.1.100'; // ← remplace par l'IP de ta machine
+const API_BASE = Platform.select({
+  web: 'http://localhost:3000/api',
+  default: `http://${DEVICE_HOST}:3000/api`,
+});
 
 export interface Item {
   id: number;
