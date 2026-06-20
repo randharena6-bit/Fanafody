@@ -30,6 +30,11 @@ const insertLog = db.prepare(`
 `);
 
 const seed = db.transaction(() => {
+  db.exec('DELETE FROM medication_logs');
+  db.exec('DELETE FROM medications');
+  db.exec('DELETE FROM password_reset_tokens');
+  db.exec('DELETE FROM trusted_contacts');
+  db.exec('DELETE FROM users');
   const u = insertUser.run('admin@fanafody.app', 'Admin', '+26134000000', hash);
   const uid = u.lastInsertRowid;
 

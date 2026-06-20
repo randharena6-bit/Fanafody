@@ -8,7 +8,7 @@ export function getItems(req: Request, res: Response): void {
 }
 
 export function getItemById(req: Request, res: Response): void {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const item = itemModel.findItemById(id);
   if (!item) {
     res.status(404).json({ message: 'Élément non trouvé' });
@@ -28,7 +28,7 @@ export function createItem(req: Request, res: Response): void {
 }
 
 export function updateItem(req: Request, res: Response): void {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const { title, description, status } = req.body;
   if (!title || !status) {
     res.status(400).json({ message: 'Champs requis : title, status' });
@@ -43,7 +43,7 @@ export function updateItem(req: Request, res: Response): void {
 }
 
 export function deleteItem(req: Request, res: Response): void {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const deleted = itemModel.deleteItem(id);
   if (!deleted) {
     res.status(404).json({ message: 'Élément non trouvé' });

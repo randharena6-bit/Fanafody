@@ -8,7 +8,7 @@ export function getMedications(req: AuthRequest, res: Response): void {
 }
 
 export function getMedicationById(req: AuthRequest, res: Response): void {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const item = medicationModel.findMedicationById(id);
   if (!item || item.user_id !== req.userId) {
     res.status(404).json({ message: 'Médicament non trouvé' });
@@ -30,7 +30,7 @@ export function createMedication(req: AuthRequest, res: Response): void {
 }
 
 export function updateMedication(req: AuthRequest, res: Response): void {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const item = medicationModel.updateMedication(id, req.userId!, req.body);
   if (!item) {
     res.status(404).json({ message: 'Médicament non trouvé' });
@@ -40,7 +40,7 @@ export function updateMedication(req: AuthRequest, res: Response): void {
 }
 
 export function deleteMedication(req: AuthRequest, res: Response): void {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const deleted = medicationModel.deleteMedication(id, req.userId!);
   if (!deleted) {
     res.status(404).json({ message: 'Médicament non trouvé' });

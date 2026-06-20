@@ -30,6 +30,15 @@ export function updateUser(id: number, name: string, phone: string): User | unde
   return findUserById(id);
 }
 
+export function findAllUsers(): Omit<User, 'password'>[] {
+  return getDatabase().prepare('SELECT id, email, name, phone, created_at, updated_at FROM users ORDER BY created_at DESC').all() as Omit<User, 'password'>[];
+}
+
+export function deleteUser(id: number): boolean {
+  const r = getDatabase().prepare('DELETE FROM users WHERE id = ?').run(id);
+  return r.changes > 0;
+}
+
 export function updatePassword(id: number, password: string): void {
   getDatabase().prepare('UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(password, id);
 }

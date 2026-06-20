@@ -7,7 +7,7 @@ export function getAllUsers(req: Request, res: Response): void {
 }
 
 export function getUserById(req: Request, res: Response): void {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const user = userModel.findUserById(id);
   if (!user) {
     res.status(404).json({ message: 'Utilisateur non trouvé' });
@@ -27,7 +27,7 @@ export function createUser(req: Request, res: Response): void {
 }
 
 export function updateUser(req: Request, res: Response): void {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const { email, name } = req.body;
   if (!email || !name) {
     res.status(400).json({ message: 'Champs requis : email, name' });
@@ -42,7 +42,7 @@ export function updateUser(req: Request, res: Response): void {
 }
 
 export function deleteUser(req: Request, res: Response): void {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   const deleted = userModel.deleteUser(id);
   if (!deleted) {
     res.status(404).json({ message: 'Utilisateur non trouvé' });

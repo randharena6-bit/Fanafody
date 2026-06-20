@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
-import { createMedication } from '../../services/api';
+import { createMedication, getMedications } from '../../services/api';
 import { Colors, Fonts } from '../../constants/theme';
+import { scheduleMedicationReminder } from '../../services/notifications';
 
 export default function AddMedicationScreen() {
   const [name, setName] = useState('');
@@ -24,7 +25,7 @@ export default function AddMedicationScreen() {
     }
     setLoading(true);
     try {
-      await createMedication({
+      const med = await createMedication({
         name: name.trim(),
         dosage: dosage.trim(),
         time: time.trim(),
@@ -32,6 +33,7 @@ export default function AddMedicationScreen() {
         end_date: endDate || undefined,
         notes: notes.trim() || undefined,
       });
+      await scheduleMedicationReminder(med);
       router.back();
     } catch (err: any) {
       Alert.alert('Erreur', err.message);

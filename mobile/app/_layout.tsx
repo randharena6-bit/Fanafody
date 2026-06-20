@@ -1,8 +1,17 @@
+import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '../services/auth';
+import { requestPermissions, setupNotificationCategories } from '../services/notifications';
 
 export default function RootLayout() {
+  useEffect(() => {
+    (async () => {
+      await requestPermissions();
+      await setupNotificationCategories();
+    })();
+  }, []);
+
   return (
     <AuthProvider>
       <StatusBar style="auto" />

@@ -1,5 +1,29 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Platform } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 import * as api from './api';
+
+const TOKEN_KEY = 'fanafody_token';
+
+async function getToken(): Promise<string | null> {
+  if (Platform.OS === 'web') {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+  return SecureStore.getItemAsync(TOKEN_KEY);
+}
+
+async function setToken(token: string | null) {
+  if (Platform.OS === 'web') {
+    if (token) localStorage.setItem(TOKEN_KEY, token);
+    else localStorage.removeItem(TOKEN_KEY);
+    return;
+  }
+  if (token) {
+    await SecureStore.setItemAsync(TOKEN_KEY, token);
+  } else {
+    await SecureStore.deleteItemAsync(TOKEN_KEY);
+  }
+}
 
 interface AuthState {
   user: api.User | null;
@@ -20,37 +44,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({ user: null, token: null, loading: true });
 
   useEffect(() => {
-    const stored = localStorage.getItem('fanafody_token');
-    if (stored) {
-      api.setToken(stored);
-      api.getMe()
-        .then((user) => setState({ user, token: stored, loading: false }))
-        .catch(() => {
-          localStorage.removeItem('fanafody_token');
-          setState({ user: null, token: null, loading: false });
-        });
-    } else {
-      setState((s) => ({ ...s, loading: false }));
-    }
+    (async () => {
+      const stored = await getToken();
+      if (stored) {
+        api.setToken(stored);
+        try {
+          const user = await api.getMe();
+          setState({ user, token: stored, loading: false });
+          return;
+        } catch {
+          await setToken(null);
+        }
+      }
+      setState({ user: null, token: null, loading: false });
+    })();
   }, []);
 
   async function signIn(email: string, password: string) {
     const res = await api.login(email, password);
     api.setToken(res.token);
-    localStorage.setItem('fanafody_token', res.token);
+    await setToken(res.token);
     setState({ user: res.user, token: res.token, loading: false });
   }
 
   async function signUp(email: string, password: string, name: string, phone?: string) {
     const res = await api.register(email, password, name, phone);
     api.setToken(res.token);
-    localStorage.setItem('fanafody_token', res.token);
+    await setToken(res.token);
     setState({ user: res.user, token: res.token, loading: false });
   }
 
   function signOut() {
     api.setToken(null);
-    localStorage.removeItem('fanafody_token');
+    setToken(null);
     setState({ user: null, token: null, loading: false });
   }
 

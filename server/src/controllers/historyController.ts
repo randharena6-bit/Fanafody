@@ -17,7 +17,7 @@ export function logMedication(req: AuthRequest, res: Response): void {
 }
 
 export function getMedicationLogs(req: AuthRequest, res: Response): void {
-  const medicationId = parseInt(req.params.medicationId);
+  const medicationId = parseInt(req.params.medicationId as string);
   const logs = historyModel.getMedicationLogs(medicationId, req.userId!);
   res.json(logs);
 }

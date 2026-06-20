@@ -2,8 +2,9 @@ import { useCallback, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
-import { getTodaysMedications, logMedicationIntake, Medication } from '../../services/api';
+import { getTodaysMedications, logMedicationIntake, getMedications, Medication } from '../../services/api';
 import { Colors, Fonts } from '../../constants/theme';
+import { scheduleMedicationReminder } from '../../services/notifications';
 
 export default function HomeScreen() {
   const [medications, setMedications] = useState<Medication[]>([]);
@@ -20,6 +21,8 @@ export default function HomeScreen() {
     try {
       const data = await getTodaysMedications();
       setMedications(data);
+      const all = await getMedications();
+      all.forEach((m) => scheduleMedicationReminder(m));
     } catch (err: any) {
       console.error(err);
     } finally {
