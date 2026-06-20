@@ -1,6 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
-
-export function errorHandler(err: Error, req: Request, res: Response, _next: NextFunction): void {
+export function errorHandler(err: Error, _req: any, res: any, _next: any): void {
   console.error('Error:', err.message);
   res.status(500).json({
     message: 'Erreur interne du serveur',
@@ -8,6 +6,6 @@ export function errorHandler(err: Error, req: Request, res: Response, _next: Nex
   });
 }
 
-export function notFoundHandler(req: Request, res: Response): void {
-  res.status(404).json({ message: `Route ${req.method} ${req.path} non trouvée` });
+export function notFoundHandler(_req: any, res: any): void {
+  res.status(404).json({ message: 'Route non trouvée' });
 }

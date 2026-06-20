@@ -3,36 +3,33 @@ import { getDatabase } from '../database/connection';
 export interface User {
   id: number;
   email: string;
-  name: string;
   password: string;
+  name: string;
+  phone: string;
   created_at: string;
   updated_at: string;
 }
 
-export function findAllUsers(): User[] {
-  const db = getDatabase();
-  return db.prepare('SELECT id, email, name, created_at, updated_at FROM users').all() as User[];
+export function findUserByEmail(email: string): User | undefined {
+  return getDatabase().prepare('SELECT * FROM users WHERE email = ?').get(email) as User | undefined;
 }
 
 export function findUserById(id: number): User | undefined {
-  const db = getDatabase();
-  return db.prepare('SELECT id, email, name, created_at, updated_at FROM users WHERE id = ?').get(id) as User | undefined;
+  return getDatabase().prepare('SELECT * FROM users WHERE id = ?').get(id) as User | undefined;
 }
 
-export function createUser(email: string, name: string, password: string): User {
+export function createUser(email: string, password: string, name: string, phone?: string): User {
   const db = getDatabase();
-  const result = db.prepare('INSERT INTO users (email, name, password) VALUES (?, ?, ?)').run(email, name, password);
-  return findUserById(result.lastInsertRowid as number)!;
+  db.prepare('INSERT INTO users (email, password, name, phone) VALUES (?, ?, ?, ?)').run(email, password, name, phone || '');
+  return findUserByEmail(email)!;
 }
 
-export function updateUser(id: number, email: string, name: string): User | undefined {
+export function updateUser(id: number, name: string, phone: string): User | undefined {
   const db = getDatabase();
-  db.prepare('UPDATE users SET email = ?, name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(email, name, id);
+  db.prepare('UPDATE users SET name = ?, phone = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(name, phone, id);
   return findUserById(id);
 }
 
-export function deleteUser(id: number): boolean {
-  const db = getDatabase();
-  const result = db.prepare('DELETE FROM users WHERE id = ?').run(id);
-  return result.changes > 0;
+export function updatePassword(id: number, password: string): void {
+  getDatabase().prepare('UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(password, id);
 }
