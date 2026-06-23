@@ -1,22 +1,34 @@
-import { useEffect, useRef } from 'react';
-import { Animated } from 'react-native';
+import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { AuthProvider } from '../services/auth';
-import { requestPermissions, setupNotificationCategories } from '../services/notifications';
-import { Colors, Radius } from '../constants/theme';
+import { AuthProvider, useAuth } from '../services/auth';
+import { requestPermissions, setupNotificationCategories, rescheduleAllReminders } from '../services/notifications';
+import { getMedications } from '../services/api';
+import { Colors } from '../constants/theme';
 
-export default function RootLayout() {
+function NotificationScheduler() {
+  const { user, loading } = useAuth();
+
   useEffect(() => {
+    if (loading || !user) return;
     (async () => {
       await requestPermissions();
       await setupNotificationCategories();
+      try {
+        const meds = await getMedications();
+        await rescheduleAllReminders(meds);
+      } catch {}
     })();
-  }, []);
+  }, [user, loading]);
 
+  return null;
+}
+
+export default function RootLayout() {
   return (
     <AuthProvider>
       <StatusBar style="auto" />
+      <NotificationScheduler />
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: Colors.primary },

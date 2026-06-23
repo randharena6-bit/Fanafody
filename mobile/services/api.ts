@@ -215,3 +215,25 @@ export function updateContact(id: number, data: Partial<TrustedContact>): Promis
 export function deleteContact(id: number): Promise<void> {
   return request(`/contacts/${id}`, { method: 'DELETE' });
 }
+
+export interface ChatMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
+export interface ChatResponse {
+  id: string;
+  message: ChatMessage;
+  usage: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+}
+
+export function chat(messages: ChatMessage[], model?: string): Promise<ChatResponse> {
+  return request('/ai/chat', {
+    method: 'POST',
+    body: JSON.stringify({ messages, model }),
+  });
+}

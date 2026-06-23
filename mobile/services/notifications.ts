@@ -21,6 +21,18 @@ if (Notifications) {
 
 const isSupported = Platform.OS !== 'web' && Notifications;
 
+function todayDateString(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function isWithinDateRange(start_date: string, end_date: string): boolean {
+  const today = todayDateString();
+  if (today < start_date) return false;
+  if (end_date && today > end_date) return false;
+  return true;
+}
+
 export async function requestPermissions(): Promise<boolean> {
   if (!isSupported) return true;
   const { status: existing } = await Notifications!.getPermissionsAsync();
@@ -32,6 +44,8 @@ export async function requestPermissions(): Promise<boolean> {
 export async function scheduleMedicationReminder(medication: Medication): Promise<void> {
   if (!isSupported) return;
   await cancelMedicationReminder(medication.id);
+
+  if (!isWithinDateRange(medication.start_date, medication.end_date)) return;
 
   const [hours, minutes] = medication.time.split(':').map(Number);
 
@@ -63,6 +77,13 @@ export async function cancelMedicationReminder(medicationId: number): Promise<vo
 export async function cancelAllReminders(): Promise<void> {
   if (!isSupported) return;
   await Notifications!.cancelAllScheduledNotificationsAsync();
+}
+
+export async function rescheduleAllReminders(medications: Medication[]): Promise<void> {
+  if (!isSupported) return;
+  for (const med of medications) {
+    await scheduleMedicationReminder(med);
+  }
 }
 
 export async function setupNotificationCategories(): Promise<void> {

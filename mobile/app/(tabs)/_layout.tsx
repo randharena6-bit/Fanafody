@@ -7,6 +7,7 @@ import { Colors, Shadows, Radius } from '../../constants/theme';
 const TAB_ICONS: Record<string, { focused: keyof typeof Ionicons.glyphMap; default: keyof typeof Ionicons.glyphMap }> = {
   index: { focused: 'today', default: 'today-outline' },
   history: { focused: 'time', default: 'time-outline' },
+  chat: { focused: 'chatbubbles', default: 'chatbubbles-outline' },
   profile: { focused: 'person', default: 'person-outline' },
 };
 
@@ -48,6 +49,13 @@ export default function TabLayout() {
         options={{
           title: 'Historique',
           tabBarIcon: ({ color, focused }) => <TabIcon name="history" color={color} focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="chat"
+        options={{
+          title: 'Chat',
+          tabBarIcon: ({ color, focused }) => <TabIcon name="chat" color={color} focused={focused} />,
         }}
       />
       <Tabs.Screen

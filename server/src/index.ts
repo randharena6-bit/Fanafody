@@ -6,6 +6,7 @@ import itemRoutes from './routes/itemRoutes';
 import medicationRoutes from './routes/medicationRoutes';
 import contactRoutes from './routes/contactRoutes';
 import historyRoutes from './routes/historyRoutes';
+import aiRoutes from './routes/aiRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
 const app = express();
@@ -24,6 +25,7 @@ app.use('/api/items', itemRoutes);
 app.use('/api/medications', medicationRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/history', historyRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

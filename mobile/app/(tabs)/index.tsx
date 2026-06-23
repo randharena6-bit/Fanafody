@@ -5,7 +5,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getTodaysMedications, logMedicationIntake, getMedications, Medication } from '../../services/api';
 import { Colors, Fonts, Shadows, Radius, Spacing, Gradients } from '../../constants/theme';
-import { scheduleMedicationReminder } from '../../services/notifications';
+import { rescheduleAllReminders } from '../../services/notifications';
 import { useFadeIn, useStaggeredAnimation, useAnimatedPress } from '../../hooks/useAnimatedEntry';
 
 const { width } = Dimensions.get('window');
@@ -110,7 +110,7 @@ export default function HomeScreen() {
       const data = await getTodaysMedications();
       setMedications(data);
       const all = await getMedications();
-      all.forEach((m) => scheduleMedicationReminder(m));
+      await rescheduleAllReminders(all);
     } catch (err: any) { console.error(err); }
     finally { setLoading(false); setRefreshing(false); }
   }
